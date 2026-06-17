@@ -1,3 +1,13 @@
+import claroInsights from "../../assets/claro/claro-insights.jpg";
+import claroScanResults from "../../assets/claro/claro-scan-results.jpg";
+import claroTransformView from "../../assets/claro/claro-transform-view.jpg";
+import claroUploadDocument from "../../assets/claro/claro-upload-document.jpg";
+import rebalanceHackathonDemo from "../../assets/rebalance/rebalance-hackathon-demo.jpg";
+import rebalanceHardwareBuild from "../../assets/rebalance/rebalance-hardware-build.jpg";
+import rebalanceHardwarePresentation from "../../assets/rebalance/rebalance-hardware-presentation.jpg";
+import rebalanceLiveDashboardDemo from "../../assets/rebalance/rebalance-live-dashboard-demo.jpg";
+import spontusLogo from "../../assets/spontus/spontus-logo.png";
+
 export type AnimationType =
   | "balance"
   | "document"
@@ -26,6 +36,7 @@ export interface Project {
    *   images: [{ src: claroShot1, alt: "Claro before/after view" }]
    */
   images?: { src: string; alt: string }[];
+  logo?: { src: string; alt: string };
   language: string;
   /** Accent color used by the card's themed animation */
   color: string;
@@ -39,6 +50,7 @@ export interface Project {
   /** Label + whether the primary link is something other than GitHub */
   isPrivate?: boolean;
   liveUrl?: string;
+  liveLabel?: string;
   animation: AnimationType;
 }
 
@@ -70,6 +82,24 @@ export const projects: Project[] = [
       "Arduino UNO",
       "Gemini 2.5 Flash",
       "Recharts",
+    ],
+    images: [
+      {
+        src: rebalanceHardwareBuild,
+        alt: "ReBalance hardware prototype with pressure sensors wired to an Elegoo board",
+      },
+      {
+        src: rebalanceHackathonDemo,
+        alt: "ReBalance being demonstrated at the oSTEM x CPES Hackathon Spring 2026",
+      },
+      {
+        src: rebalanceLiveDashboardDemo,
+        alt: "ReBalance live dashboard demo projected during the team presentation",
+      },
+      {
+        src: rebalanceHardwarePresentation,
+        alt: "ReBalance team presenting the hardware build at Cal Poly College of Engineering",
+      },
     ],
     language: "JavaScript",
     color: "#2d9c6f",
@@ -103,6 +133,24 @@ export const projects: Project[] = [
       "MCP",
       "Tailwind CSS",
     ],
+    images: [
+      {
+        src: claroUploadDocument,
+        alt: "Claro upload screen with PDF, text, URL, and disability profile options",
+      },
+      {
+        src: claroScanResults,
+        alt: "Claro scan results dashboard showing accessibility severity and readability statistics",
+      },
+      {
+        src: claroTransformView,
+        alt: "Claro transformation screen comparing before and after accessibility scores",
+      },
+      {
+        src: claroInsights,
+        alt: "Claro insights screen showing learned document accessibility patterns",
+      },
+    ],
     language: "Python",
     color: "#00bbf9",
     stars: 0,
@@ -110,11 +158,13 @@ export const projects: Project[] = [
     topics: ["fastapi", "bedrock", "accessibility", "multi-agent"],
     badge: "Kiro × Cal Poly Hackathon · 2026",
     linkUrl: "https://github.com/joshnaim1/Claro",
+    liveUrl: "https://devpost.com/software/claro-dx6f14",
+    liveLabel: "Devpost",
     animation: "document",
   },
   {
     id: "spontus",
-    name: "spontus",
+    name: "Spontus",
     description:
       "A full-stack web app built with Next.js 16, React 19, Supabase, and Motion. Private and in active development.",
     longDescription:
@@ -141,6 +191,10 @@ export const projects: Project[] = [
     badge: "In progress",
     linkUrl: "https://spontus.io",
     isPrivate: true,
+    logo: {
+      src: spontusLogo,
+      alt: "Spontus logo",
+    },
     animation: "particles",
   },
 ];

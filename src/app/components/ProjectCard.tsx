@@ -53,7 +53,17 @@ export function ProjectCard({
 
       <div className="flex flex-1 flex-col gap-3 p-5">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="font-['Satoshi',sans-serif] tracking-tight">{project.name}</h3>
+          <h3 className="font-['Satoshi',sans-serif] tracking-tight">
+            {project.logo ? (
+              <img
+                src={project.logo.src}
+                alt={project.logo.alt}
+                className="mt-1 h-5 w-auto max-w-36"
+              />
+            ) : (
+              project.name
+            )}
+          </h3>
           <a
             href={project.linkUrl}
             target="_blank"

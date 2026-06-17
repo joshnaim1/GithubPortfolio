@@ -1,8 +1,6 @@
 import { ArrowDown, FileText, Github, Linkedin, Mail } from "lucide-react";
 
-// Once you have a hosted resume, set this URL (or import a bundled PDF) and the
-// Résumé button will appear automatically.
-const RESUME_URL = "";
+const RESUME_URL = "/Joshua_Naim_Resume.pdf";
 
 export function Hero() {
   const scrollToWork = () =>
@@ -36,8 +34,8 @@ export function Hero() {
           <p className="text-muted-foreground" style={{ maxWidth: "34rem" }}>
             Computer Engineering student at Cal Poly SLO and an AI/ML
             engineering intern at CWX. I like machine learning, simulations, and
-            products people actually use. A lot of what&apos;s here started at a
-            hackathon and kept going.
+            products people actually use. Mostly, I just really love building
+            useful things.
           </p>
 
           <div className="flex items-center gap-4">

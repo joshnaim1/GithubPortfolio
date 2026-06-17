@@ -73,8 +73,15 @@ export function ProjectModal({
                   {project.badge}
                 </span>
               )}
+              {project.logo && (
+                <img
+                  src={project.logo.src}
+                  alt={project.logo.alt}
+                  className="mt-5 h-8 w-auto max-w-52"
+                />
+              )}
               <h3
-                className="mt-3 font-['Satoshi',sans-serif] tracking-tight"
+                className={`${project.logo ? "mt-4" : "mt-3"} font-['Satoshi',sans-serif] tracking-tight`}
                 style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)", fontWeight: 800, lineHeight: 1 }}
               >
                 {project.name}
@@ -160,7 +167,7 @@ export function ProjectModal({
                     className="inline-flex items-center gap-1.5 rounded-full border border-border px-5 py-2.5 font-['Space_Mono',monospace] transition-colors hover:border-foreground"
                     style={{ fontSize: "13px" }}
                   >
-                    Live demo <ArrowUpRight className="size-4" />
+                    {project.liveLabel ?? "Live demo"} <ArrowUpRight className="size-4" />
                   </a>
                 )}
               </div>
