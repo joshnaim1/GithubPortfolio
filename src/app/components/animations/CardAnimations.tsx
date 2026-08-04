@@ -242,6 +242,218 @@ export function ParticlesAnimation({ active, color }: AnimationProps) {
   return <canvas ref={ref} className={canvasClass} aria-hidden />;
 }
 
+/**
+ * DeskPartner: a two-link arm solving inverse kinematics, exactly like the real
+ * robot's pick-and-place loop. Idle = it cycles home → pick the can → carry →
+ * drop it in the taped zone → home, forever. Hover = you take the wrist and the
+ * IK solver follows your cursor, the way the real-time jog script does.
+ */
+export function ArmAnimation({ active, color }: AnimationProps) {
+  const state = useRef({ tipX: 0, tipY: 0, seeded: false });
+  const ref = useCanvasLoop((ctx, t, w, h, pointer) => {
+    const groundY = h - 15;
+    // The arm pivots at the top of its plinth, so the IK anchor sits there too.
+    const shoulderY = groundY - 13;
+
+    // --- Arm, then workspace ------------------------------------------------
+    // The canvas is short and wide, so the arm is sized first (a raised elbow
+    // has to stay on canvas) and the workspace is then laid out inside a
+    // comfortable mid-range band of the reachable envelope. Targets nearer than
+    // that fold the arm into a near-vertical spike; targets further clamp short.
+    const canR = 6.5;
+    const L1 = Math.min((shoulderY - 6) / 0.9, w * 0.3);
+    const L2 = L1 * 0.92; // slight taper so the forearm reads as its own link
+    const reach = L1 + L2;
+
+    const dNear = reach * 0.56; // closest the gripper is ever asked to work
+    const dFar = reach * 0.9; // furthest, still short of full extension
+    const zoneW = Math.min(w * 0.15, reach * 0.16);
+
+    // Centre the whole rig when the canvas is wider than the arm can use.
+    const baseX = Math.max(w * 0.06, (w - (dFar + zoneW / 2)) / 2);
+    const baseY = shoulderY;
+    const dropX = baseX + dFar;
+    const zoneX = dropX - zoneW / 2;
+
+    // A new can position each cycle, deterministic so it never jitters.
+    const CYCLE = 6200;
+    const cycle = Math.floor(t / CYCLE);
+    const p = (t % CYCLE) / CYCLE; // progress through the current cycle
+    const canSlot = ((cycle * 37) % 11) / 10; // 0..1
+    const canX = baseX + dNear + canSlot * (reach * 0.14);
+
+    // Home is a raised ready pose, set in polar terms from the shoulder. It is
+    // deliberately far out rather than high and close: elbow-up on a close
+    // target stands the upper arm straight up, which reads as a spike.
+    const homeAng = -Math.PI * 0.11;
+    const homeD = reach * 0.86;
+    const homeX = baseX + Math.cos(homeAng) * homeD;
+    const homeY = shoulderY + Math.sin(homeAng) * homeD;
+    const hoverH = Math.min(reach * 0.22, h * 0.32);
+
+    // Keyframes: [progress, x, y, gripClosed]
+    const keys: [number, number, number, number][] = [
+      [0.0, homeX, homeY, 0],
+      [0.18, canX, groundY - hoverH, 0],
+      [0.29, canX, groundY - canR, 0],
+      [0.37, canX, groundY - canR, 1],
+      [0.47, canX, groundY - hoverH, 1],
+      [0.68, dropX, groundY - hoverH, 1],
+      [0.76, dropX, groundY - canR, 1],
+      [0.83, dropX, groundY - canR, 0],
+      [1.0, homeX, homeY, 0],
+    ];
+
+    let kx = homeX;
+    let ky = homeY;
+    let grip = 0;
+    for (let i = 0; i < keys.length - 1; i++) {
+      const [p0, x0, y0, g0] = keys[i];
+      const [p1, x1, y1, g1] = keys[i + 1];
+      if (p >= p0 && p <= p1) {
+        const raw = (p - p0) / (p1 - p0 || 1);
+        const e = raw * raw * (3 - 2 * raw); // smoothstep
+        kx = lerp(x0, x1, e);
+        ky = lerp(y0, y1, e);
+        grip = lerp(g0, g1, e);
+        break;
+      }
+    }
+
+    // The can rides along with the gripper while it is held.
+    const holding = p > 0.35 && p < 0.8;
+    const placed = p >= 0.8;
+    let drawCanX = canX;
+    let drawCanY = groundY - canR;
+    if (holding) {
+      drawCanX = kx;
+      drawCanY = ky;
+    } else if (placed) {
+      drawCanX = dropX;
+    }
+
+    // --- Target: cursor when hovering, otherwise the cycle ------------------
+    const targetX = pointer.inside ? pointer.x * w : kx;
+    const targetY = pointer.inside ? pointer.y * h : ky;
+    if (!state.current.seeded) {
+      state.current = { tipX: targetX, tipY: targetY, seeded: true };
+    }
+    state.current.tipX = lerp(state.current.tipX, targetX, 0.18);
+    state.current.tipY = lerp(state.current.tipY, targetY, 0.18);
+
+    // --- Inverse kinematics (2-link, elbow-up) ------------------------------
+    let dx = state.current.tipX - baseX;
+    let dy = state.current.tipY - baseY;
+    let d = Math.hypot(dx, dy) || 0.001;
+    // Clamp the target into the reachable annulus along its own direction.
+    const dMin = Math.abs(L1 - L2) + 1;
+    const dMax = L1 + L2 - 1;
+    const dClamped = Math.max(dMin, Math.min(dMax, d));
+    const tipX = baseX + (dx / d) * dClamped;
+    const tipY = baseY + (dy / d) * dClamped;
+    d = dClamped;
+
+    const a = Math.atan2(tipY - baseY, tipX - baseX);
+    const cosB = (d * d + L1 * L1 - L2 * L2) / (2 * d * L1);
+    const B = Math.acos(Math.max(-1, Math.min(1, cosB)));
+    // Two solutions; keep the one whose elbow sits higher on screen.
+    const up = { x: baseX + Math.cos(a - B) * L1, y: baseY + Math.sin(a - B) * L1 };
+    const down = { x: baseX + Math.cos(a + B) * L1, y: baseY + Math.sin(a + B) * L1 };
+    const elbow = up.y <= down.y ? up : down;
+
+    // --- Draw ---------------------------------------------------------------
+    // Workspace floor
+    ctx.strokeStyle = hexToRgba(INK, 0.12);
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(10, groundY + 0.5);
+    ctx.lineTo(w - 10, groundY + 0.5);
+    ctx.stroke();
+
+    // Taped destination zone
+    ctx.save();
+    ctx.fillStyle = hexToRgba(color, 0.08);
+    ctx.fillRect(zoneX, groundY - 13, zoneW, 13);
+    ctx.setLineDash([5, 4]);
+    ctx.strokeStyle = hexToRgba(color, 0.6);
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(zoneX, groundY - 13, zoneW, 13);
+    ctx.restore();
+
+    // The can: a little cylinder so it reads as an object, not a dot
+    const canW = 9;
+    const canH = 13;
+    ctx.save();
+    ctx.translate(drawCanX, drawCanY);
+    ctx.fillStyle = hexToRgba(INK, 0.42);
+    ctx.fillRect(-canW / 2, -canH / 2, canW, canH);
+    ctx.beginPath();
+    ctx.ellipse(0, -canH / 2, canW / 2, 2.2, 0, 0, Math.PI * 2);
+    ctx.fillStyle = hexToRgba(INK, 0.62);
+    ctx.fill();
+    ctx.restore();
+
+    // Base: a plinth with a shoulder post
+    ctx.fillStyle = hexToRgba(INK, 0.32);
+    ctx.beginPath();
+    ctx.moveTo(baseX - 13, groundY);
+    ctx.lineTo(baseX + 13, groundY);
+    ctx.lineTo(baseX + 7, groundY - 8);
+    ctx.lineTo(baseX - 7, groundY - 8);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillRect(baseX - 4, groundY - 13, 8, 6);
+
+    // Links
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 3.5;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(baseX, shoulderY);
+    ctx.lineTo(elbow.x, elbow.y);
+    ctx.lineTo(tipX, tipY);
+    ctx.stroke();
+
+    // Joints
+    for (const j of [{ x: baseX, y: shoulderY }, elbow]) {
+      ctx.beginPath();
+      ctx.arc(j.x, j.y, 3, 0, Math.PI * 2);
+      ctx.fillStyle = hexToRgba(color, 0.25);
+      ctx.fill();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+
+    // Gripper: two fingers on the forearm axis, closing as `grip` goes to 1
+    const fa = Math.atan2(tipY - elbow.y, tipX - elbow.x);
+    const open = lerp(7, 2.5, pointer.inside ? 0 : grip);
+    const fingerLen = 7;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    for (const s of [-1, 1]) {
+      const ox = Math.cos(fa + Math.PI / 2) * open * s;
+      const oy = Math.sin(fa + Math.PI / 2) * open * s;
+      ctx.beginPath();
+      ctx.moveTo(tipX + ox, tipY + oy);
+      ctx.lineTo(tipX + ox + Math.cos(fa) * fingerLen, tipY + oy + Math.sin(fa) * fingerLen);
+      ctx.stroke();
+    }
+
+    // Readout
+    ctx.font = "11px 'Space Mono', monospace";
+    ctx.fillStyle = hexToRgba(INK, 0.55);
+    ctx.textBaseline = "middle";
+    // Starts at 28 so it clears the card's accent dot at (12, 12).
+    ctx.textAlign = "left";
+    ctx.fillText(pointer.inside ? "IK JOG" : "AUTO", 28, 16);
+    ctx.textAlign = "right";
+    const j1 = Math.round((Math.atan2(elbow.y - shoulderY, elbow.x - baseX) * 180) / Math.PI);
+    ctx.fillText(`J1 ${j1 > 0 ? "+" : ""}${j1}°`, w - 12, 16);
+  }, active);
+  return <canvas ref={ref} className={canvasClass} aria-hidden />;
+}
+
 /** Concentric orbits with planets tracing elliptical paths. */
 export function OrbitAnimation({ active, color }: AnimationProps) {
   const ref = useCanvasLoop((ctx, t, w, h) => {
@@ -375,6 +587,7 @@ const MAP: Record<
   balance: BalanceAnimation,
   document: DocumentAnimation,
   particles: ParticlesAnimation,
+  arm: ArmAnimation,
   orbit: OrbitAnimation,
   wave: WaveAnimation,
   morph: MorphAnimation,

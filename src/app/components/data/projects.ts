@@ -1,4 +1,8 @@
 import claroInsights from "../../assets/claro/claro-insights.jpg";
+import deskPartnerRerunViewer from "../../assets/deskpartner/deskpartner-rerun-viewer.jpg";
+import deskPartnerRigWorkspace from "../../assets/deskpartner/deskpartner-rig-workspace.jpg";
+import deskPartnerFollowerArm from "../../assets/deskpartner/deskpartner-follower-arm.jpg";
+import deskPartnerTeamVenue from "../../assets/deskpartner/deskpartner-team-venue.jpg";
 import claroScanResults from "../../assets/claro/claro-scan-results.jpg";
 import claroTransformView from "../../assets/claro/claro-transform-view.jpg";
 import claroUploadDocument from "../../assets/claro/claro-upload-document.jpg";
@@ -12,6 +16,7 @@ export type AnimationType =
   | "balance"
   | "document"
   | "particles"
+  | "arm"
   | "orbit"
   | "wave"
   | "morph"
@@ -59,6 +64,57 @@ export interface Project {
  * and tweak the `animation` field to change a card's themed visual.
  */
 export const projects: Project[] = [
+  {
+    id: "deskpartner",
+    name: "DeskPartner",
+    description:
+      "A desk-cleaning robot I led at the Embodied Metal hackathon. An overhead camera and a VLM planner drive a seven-joint reBot arm to pick objects into a taped zone, closed-loop. I ported Rerun's SO-101 data pipeline onto reBot so every episode gets logged, curated, exported, and replayed.",
+    longDescription:
+      "DeskPartner is an overhead camera, a VLM planner, and a seven-joint reBot B601-DM arm that tidies a desk zone closed-loop, built over a weekend at the Embodied Metal hackathon. I led the team: split the work into tracks, assigned roles, ran teleop data collection, and presented the demo to the judges. The piece I built was the Rerun port. Mission Robotics' collect-and-train loop only existed for the SO-101, so I rebuilt it for a different robot, one with Damiao motors, two named cameras, and an extra wrist-yaw degree of freedom. An episode flows from joint, goal, camera, and URDF logging into a local catalog, the Query API compares commanded against observed motion so bad takes get thrown out, selected episodes export as LeRobot v3, and the same trajectory replays on the arm. The whole loop is reproducible from a clean machine and verified against simulated hardware. Running it end to end on the physical arm was still open when the weekend ran out.",
+    highlights: [
+      "Led the team, assigned the tracks, and presented to judges",
+      "Ported Rerun's SO-101 learning loop to a 7-DOF reBot B601-DM",
+      "Full loop: log, record, catalog, query, export, replay",
+      "Query API rejects bad takes on commanded versus observed motion",
+      "macOS operator kit for teleop, dual-camera capture, and review",
+      "Reproducible from a clean machine against simulated hardware",
+    ],
+    stack: [
+      "Python",
+      "Rerun",
+      "LeRobot",
+      "Claude",
+      "OpenCV",
+      "MolmoAct 2",
+      "Modal",
+    ],
+    images: [
+      {
+        src: deskPartnerRerunViewer,
+        alt: "The Rerun viewer during a DeskPartner episode, showing per-joint position traces, the recorded episode metadata, and the overhead and wrist camera streams",
+      },
+      {
+        src: deskPartnerRigWorkspace,
+        alt: "The DeskPartner workspace: the reBot follower arm and leader arm beside the blue-taped sorting zone and the cans to be picked",
+      },
+      {
+        src: deskPartnerFollowerArm,
+        alt: "Close-up of the reBot B601-DM follower arm with its Damiao motors and wrist camera mounted",
+      },
+      {
+        src: deskPartnerTeamVenue,
+        alt: "The DeskPartner team at the Embodied Metal hackathon venue with the rig set up behind them",
+      },
+    ],
+    language: "Python",
+    color: "#e8590c",
+    stars: 0,
+    forks: 0,
+    topics: ["rerun", "lerobot", "robotics", "vlm"],
+    badge: "Embodied Metal Hackathon · 2026",
+    linkUrl: "https://github.com/aarochu/DeskPartner",
+    animation: "arm",
+  },
   {
     id: "rebalance",
     name: "ReBalance",
