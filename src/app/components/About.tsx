@@ -1,4 +1,5 @@
 import { ArrowUpRight } from "lucide-react";
+import { projects } from "./data/projects";
 
 const skills = [
   "Python",
@@ -6,15 +7,21 @@ const skills = [
   "AI / LLMs",
   "Data Science",
   "Prompt Engineering",
+  "Robotics",
   "Simulations",
   "React",
   "TypeScript",
   "Next.js",
 ];
 
+// Derived from the project list so the counts can't drift when one is added.
+const hackathonCount = projects.filter((p) =>
+  p.badge?.toLowerCase().includes("hackathon"),
+).length;
+
 const stats: { value: string; label: string; href?: string }[] = [
-  { value: "3", label: "Featured projects" },
-  { value: "2", label: "Hackathons shipped" },
+  { value: String(projects.length), label: "Featured projects" },
+  { value: String(hackathonCount), label: "Hackathons shipped" },
   {
     value: "CWX",
     label: "AI/ML engineering intern",
@@ -38,11 +45,12 @@ export function About() {
           </h2>
           <p className="mt-6 max-w-xl text-muted-foreground">
             I&apos;m a Computer Engineering student at Cal Poly SLO who likes
-            tinkering with AI, machine learning, and simulations. My favorite
-            projects start with a real need, like making documents accessible
-            for students or turning stroke rehab into something you can actually
-            measure, and grow from there. I also speak Mandarin and write about
-            tech on the side.
+            tinkering with AI, machine learning, robots, and simulations. My
+            favorite projects start with a real need, like making documents
+            accessible for students, turning stroke rehab into something you can
+            actually measure, or teaching a robot arm to tidy up after itself,
+            and grow from there. I also speak Mandarin and write about tech on
+            the side.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-2">
