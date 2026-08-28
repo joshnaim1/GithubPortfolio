@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Menu, X } from "lucide-react";
 
 const links = [
   { href: "#work", label: "Work" },
@@ -9,6 +10,7 @@ const links = [
 
 export function TopNav() {
   const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 16);
@@ -19,13 +21,23 @@ export function TopNav() {
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
+    setOpen(false);
     document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
   };
+
+  // Close the mobile sheet if the viewport grows past the md breakpoint.
+  useEffect(() => {
+    if (!open) return;
+    const mq = window.matchMedia("(min-width: 768px)");
+    const onChange = () => mq.matches && setOpen(false);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, [open]);
 
   return (
     <header
       className={`sticky top-0 z-50 transition-colors duration-300 ${
-        scrolled
+        scrolled || open
           ? "border-b border-border bg-background/80 backdrop-blur-md"
           : "border-b border-transparent"
       }`}
@@ -53,15 +65,49 @@ export function TopNav() {
             </li>
           ))}
         </ul>
-        <a
-          href="#contact"
-          onClick={(e) => handleClick(e, "#contact")}
-          className="rounded-full bg-foreground px-4 py-2 font-['Space_Mono',monospace] uppercase tracking-[0.12em] text-[color:var(--background)] transition-transform hover:scale-105"
-          style={{ fontSize: "12px" }}
-        >
-          Let&apos;s talk
-        </a>
+        <div className="flex items-center gap-2">
+          <a
+            href="#contact"
+            onClick={(e) => handleClick(e, "#contact")}
+            className="rounded-full bg-foreground px-4 py-2 font-['Space_Mono',monospace] uppercase tracking-[0.12em] text-[color:var(--background)] transition-transform hover:scale-105"
+            style={{ fontSize: "12px" }}
+          >
+            Let&apos;s talk
+          </a>
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
+            aria-controls="mobile-nav"
+            className="rounded-full border border-border p-2 text-foreground transition-colors hover:border-foreground md:hidden"
+          >
+            {open ? <X className="size-4" /> : <Menu className="size-4" />}
+          </button>
+        </div>
       </nav>
+
+      {open && (
+        <div
+          id="mobile-nav"
+          className="border-t border-border bg-background/95 backdrop-blur-md md:hidden"
+        >
+          <ul className="mx-auto flex max-w-6xl flex-col px-6 py-2">
+            {links.map((link) => (
+              <li key={link.href}>
+                <a
+                  href={link.href}
+                  onClick={(e) => handleClick(e, link.href)}
+                  className="block border-b border-border py-4 font-['Space_Mono',monospace] uppercase tracking-[0.15em] text-muted-foreground transition-colors last:border-b-0 hover:text-foreground"
+                  style={{ fontSize: "13px" }}
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </header>
   );
 }

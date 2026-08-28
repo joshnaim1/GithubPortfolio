@@ -10,7 +10,7 @@ export function Hero() {
     <section id="top" className="relative overflow-hidden">
       <div className="mx-auto max-w-6xl px-6 pb-20 pt-20 md:pt-28">
         <p className="font-['Space_Mono',monospace] uppercase tracking-[0.25em] text-muted-foreground" style={{ fontSize: "13px" }}>
-          AI/ML Intern @ CWX · Computer Engineering @ Cal Poly SLO
+          AI Engineer @ Actual Agentic Solutions · Computer Engineering @ Cal Poly SLO
         </p>
 
         <h1
@@ -21,9 +21,17 @@ export function Hero() {
           <br />
           <span className="relative inline-block">
             <span className="relative z-10">help</span>
+            {/* Highlighter bar. Sized in em so it tracks the fluid headline
+                instead of drifting into a strikethrough at large sizes. */}
             <span
-              className="absolute inset-x-0 bottom-1 z-0 h-4 md:h-6"
-              style={{ backgroundColor: "var(--accent)" }}
+              className="absolute z-0 rounded-[0.03em]"
+              style={{
+                backgroundColor: "var(--accent)",
+                left: "-0.04em",
+                right: "-0.04em",
+                bottom: "0.06em",
+                height: "0.28em",
+              }}
               aria-hidden
             />
           </span>{" "}
@@ -32,10 +40,9 @@ export function Hero() {
 
         <div className="mt-10 flex max-w-2xl flex-col gap-8 md:flex-row md:items-end md:justify-between">
           <p className="text-muted-foreground" style={{ maxWidth: "34rem" }}>
-            Computer Engineering student at Cal Poly SLO and an AI/ML
-            engineering intern at CWX. I like machine learning, simulations, and
-            products people actually use. Mostly, I just really love building
-            useful things.
+            I build AI agent systems. Currently contracted to Google Cloud
+            through Actual Agentic Solutions, and studying Computer Engineering
+            at Cal Poly SLO.
           </p>
 
           <div className="flex items-center gap-4">

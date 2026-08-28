@@ -70,9 +70,10 @@ export const projects: Project[] = [
     description:
       "A desk-cleaning robot I led at the Embodied Metal hackathon. An overhead camera and a VLM planner drive a seven-joint reBot arm to pick objects into a taped zone, closed-loop. I ported Rerun's SO-101 data pipeline onto reBot so every episode gets logged, curated, exported, and replayed.",
     longDescription:
-      "DeskPartner is an overhead camera, a VLM planner, and a seven-joint reBot B601-DM arm that tidies a desk zone closed-loop, built over a weekend at the Embodied Metal hackathon. I led the team: split the work into tracks, assigned roles, ran teleop data collection, and presented the demo to the judges. The piece I built was the Rerun port. Mission Robotics' collect-and-train loop only existed for the SO-101, so I rebuilt it for a different robot, one with Damiao motors, two named cameras, and an extra wrist-yaw degree of freedom. An episode flows from joint, goal, camera, and URDF logging into a local catalog, the Query API compares commanded against observed motion so bad takes get thrown out, selected episodes export as LeRobot v3, and the same trajectory replays on the arm. The whole loop is reproducible from a clean machine and verified against simulated hardware. Running it end to end on the physical arm was still open when the weekend ran out.",
+      "DeskPartner is an overhead camera, a VLM planner, and a seven-joint reBot B601-DM arm that tidies a desk zone closed-loop, built over a weekend at the Embodied Metal robotics hackathon at Mission Robotics in San Francisco, where it took an honorable mention. We trained vision-language-action models over a LeRobot teleop pipeline to sort cans from a cluttered table. I led the team of five: split the work into tracks, assigned roles, ran teleop data collection, and presented the demo to the judges. The piece I built was the Rerun port. Mission Robotics' collect-and-train loop only existed for the SO-101, so I rebuilt it for a different robot, one with Damiao motors, two named cameras, and an extra wrist-yaw degree of freedom. An episode flows from joint, goal, camera, and URDF logging into a local catalog, the Query API compares commanded against observed motion so bad takes get thrown out, selected episodes export as LeRobot v3, and the same trajectory replays on the arm. The whole loop is reproducible from a clean machine and verified against simulated hardware. Running it end to end on the physical arm was still open when the weekend ran out.",
     highlights: [
-      "Led the team, assigned the tracks, and presented to judges",
+      "Honorable mention at the Embodied Metal robotics hackathon, Mission Robotics, San Francisco",
+      "Led a team of five, assigned the tracks, and presented to judges",
       "Ported Rerun's SO-101 learning loop to a 7-DOF reBot B601-DM",
       "Full loop: log, record, catalog, query, export, replay",
       "Query API rejects bad takes on commanded versus observed motion",
@@ -111,7 +112,7 @@ export const projects: Project[] = [
     stars: 0,
     forks: 0,
     topics: ["rerun", "lerobot", "robotics", "vlm"],
-    badge: "Embodied Metal Hackathon · 2026",
+    badge: "Honorable Mention · Embodied Metal Hackathon · July 2026",
     linkUrl: "https://github.com/aarochu/DeskPartner",
     animation: "arm",
   },

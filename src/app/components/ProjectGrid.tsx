@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Reveal } from "./Reveal";
 import { ProjectCard } from "./ProjectCard";
 import { ProjectModal } from "./ProjectModal";
 import { projects, type Project } from "./data/projects";
@@ -8,7 +9,7 @@ export function ProjectGrid() {
 
   return (
     <section id="work" className="mx-auto max-w-6xl px-6 py-24">
-      <div className="mb-12 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+      <Reveal className="mb-12 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="font-['Space_Mono',monospace] uppercase tracking-[0.2em] text-muted-foreground" style={{ fontSize: "12px" }}>
             Selected Work
@@ -21,11 +22,13 @@ export function ProjectGrid() {
           Each card&apos;s animation reflects what the project does. Hover to play
           with it, or click a card for the full story.
         </p>
-      </div>
+      </Reveal>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {projects.map((project) => (
-          <ProjectCard key={project.id} project={project} onOpen={setSelected} />
+        {projects.map((project, i) => (
+          <Reveal key={project.id} delay={(i % 3) * 0.08} className="flex">
+            <ProjectCard project={project} onOpen={setSelected} />
+          </Reveal>
         ))}
       </div>
 
