@@ -3,6 +3,7 @@ import { Hero } from "./components/Hero";
 import { ProjectGrid } from "./components/ProjectGrid";
 import { About } from "./components/About";
 import { InteractiveFeature } from "./components/InteractiveFeature";
+import { Swimming } from "./components/Swimming";
 import { Footer } from "./components/Footer";
 
 export default function App() {
@@ -14,6 +15,7 @@ export default function App() {
         <ProjectGrid />
         <About />
         <InteractiveFeature />
+        <Swimming />
       </main>
       <Footer />
     </div>
