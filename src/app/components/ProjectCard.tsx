@@ -39,7 +39,7 @@ export function ProjectCard({
       role="button"
       tabIndex={0}
       aria-label={`${project.name}: open details`}
-      className="group relative flex cursor-pointer flex-col overflow-hidden rounded-xl border border-border bg-card transition-all duration-300 hover:-translate-y-1 hover:border-[color:var(--accent)] hover:shadow-[0_12px_40px_-12px_rgba(12,12,12,0.25)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring)]"
+      className="group relative flex h-full w-full cursor-pointer flex-col overflow-hidden rounded-xl border border-border bg-card transition-all duration-300 hover:-translate-y-1 hover:border-[color:var(--accent)] hover:shadow-[0_12px_40px_-12px_rgba(12,12,12,0.25)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring)]"
     >
       {/* Themed animation canvas */}
       <div className="relative h-40 w-full overflow-hidden border-b border-border bg-[color:var(--muted)]">
@@ -123,8 +123,9 @@ export function ProjectCard({
               </span>
             )}
           </span>
-          <span className="flex items-center gap-0.5 text-foreground transition-colors group-hover:text-[color:var(--accent-foreground)]">
-            Details <ArrowUpRight className="size-3.5" />
+          <span className="flex items-center gap-1 text-foreground">
+            Details
+            <ArrowUpRight className="size-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </span>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import { ArrowUpRight } from "lucide-react";
-import { projects } from "./data/projects";
+import { Reveal } from "./Reveal";
 
 const skills = [
   "Python",
@@ -14,18 +14,55 @@ const skills = [
   "Next.js",
 ];
 
-// Derived from the project list so the counts can't drift when one is added.
-const hackathonCount = projects.filter((p) =>
-  p.badge?.toLowerCase().includes("hackathon"),
-).length;
-
-const stats: { value: string; label: string; href?: string }[] = [
-  { value: String(projects.length), label: "Featured projects" },
-  { value: String(hackathonCount), label: "Hackathons shipped" },
+/**
+ * Employment history, grouped by employer and most recent first.
+ *
+ * `org` is the employer, and it is the only thing rendered as the company.
+ * The Actual Agentic Solutions engagement names its client inside the role
+ * line and the description only: no logo, no link, no image, no alt text, no
+ * title attribute, no hover state. Actual Agentic Solutions is the employer.
+ */
+const experience: {
+  org: string;
+  href?: string;
+  roles: {
+    role: string;
+    dates: string;
+    location: string;
+    description: string;
+  }[];
+}[] = [
   {
-    value: "CWX",
-    label: "AI/ML engineering intern",
+    org: "Actual Agentic Solutions (contracted to Google Cloud)",
+    roles: [
+      {
+        role: "AI Engineer",
+        dates: "Aug 2026 - present",
+        location: "Remote",
+        description:
+          "Auditing and consolidating open and closed source repositories across Google's Agent Development Kit, Agent Garden, and agent skills ecosystem to build an ownership and dependency map for Google DevRel.",
+      },
+    ],
+  },
+  {
+    org: "CloudWerx (Google Cloud Partner)",
     href: "https://www.cloudwerx.tech/",
+    roles: [
+      {
+        role: "AI/ML Engineering Intern",
+        dates: "June 2026 - Aug 2026",
+        location: "Santa Clara, CA",
+        description:
+          "Built an internal PMO tool on Claude Code skills and agents over a deterministic Python engine, generating kickoff decks and budget trackers from a SOW or WBS. Client work was for enterprise clients in regulated industries.",
+      },
+      {
+        role: "AI/ML Engineering Intern",
+        dates: "Oct 2025 - Dec 2025",
+        location: "Santa Clara, CA",
+        description:
+          "Built a multi-agent document intelligence system on Google ADK, Gemini 2.5 Flash, and Vertex AI using an orchestrator-planner-executor pattern, reaching 96% accuracy on the DocVQA and InfographicVQA benchmarks. Deployed a hybrid Document AI and DeepSeek fallback OCR pipeline to Cloud Run via Terraform, covering 100+ document types at $0.002 per document with a 100% pipeline success rate, and benchmarked the REST inference endpoints at 3.1s / $0.01 per query against 5.9s / $0.02.",
+      },
+    ],
   },
 ];
 
@@ -33,7 +70,7 @@ export function About() {
   return (
     <section id="about" className="mx-auto max-w-6xl px-6 py-24">
       <div className="grid grid-cols-1 gap-12 md:grid-cols-[1.2fr_1fr]">
-        <div>
+        <Reveal>
           <p className="font-['Space_Mono',monospace] uppercase tracking-[0.2em] text-muted-foreground" style={{ fontSize: "12px" }}>
             About
           </p>
@@ -64,39 +101,63 @@ export function About() {
               </span>
             ))}
           </div>
-        </div>
+        </Reveal>
 
-        <div className="flex flex-col justify-center gap-8 border-l border-border pl-8">
-          {stats.map((stat) => {
-            const content = (
-              <>
-                <div
-                  className="font-['Satoshi',sans-serif] tracking-tight transition-colors group-hover/stat:text-[color:var(--accent-foreground)]"
-                  style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 900, lineHeight: 1 }}
+        <Reveal delay={0.12} className="flex flex-col gap-10 border-l border-border pl-8">
+          <p className="font-['Space_Mono',monospace] uppercase tracking-[0.2em] text-muted-foreground" style={{ fontSize: "12px" }}>
+            Experience
+          </p>
+
+          {experience.map((company) => {
+            const orgLine = (
+              <div className="inline-flex items-start gap-1">
+                <span
+                  className="font-['Satoshi',sans-serif] tracking-tight"
+                  style={{ fontSize: "18px", fontWeight: 700, lineHeight: 1.25 }}
                 >
-                  {stat.value}
-                </div>
-                <div className="mt-1 inline-flex items-center gap-1 font-['Space_Mono',monospace] uppercase tracking-[0.15em] text-muted-foreground" style={{ fontSize: "12px" }}>
-                  {stat.label}
-                  {stat.href && <ArrowUpRight className="size-3.5" />}
-                </div>
-              </>
+                  {company.org}
+                </span>
+                {company.href && (
+                  <ArrowUpRight className="mt-1 size-3.5 shrink-0 text-muted-foreground" />
+                )}
+              </div>
             );
-            return stat.href ? (
-              <a
-                key={stat.label}
-                href={stat.href}
-                target="_blank"
-                rel="noreferrer"
-                className="group/stat block transition-opacity hover:opacity-80"
-              >
-                {content}
-              </a>
-            ) : (
-              <div key={stat.label}>{content}</div>
+
+            return (
+              <div key={company.org}>
+                {company.href ? (
+                  <a
+                    href={company.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="block transition-opacity hover:opacity-80"
+                  >
+                    {orgLine}
+                  </a>
+                ) : (
+                  orgLine
+                )}
+
+                <div className="mt-4 flex flex-col gap-6">
+                  {company.roles.map((job) => (
+                    <div key={job.dates}>
+                      <div className="text-foreground">{job.role}</div>
+                      <div
+                        className="mt-1 font-['Space_Mono',monospace] uppercase tracking-[0.15em] text-muted-foreground"
+                        style={{ fontSize: "12px" }}
+                      >
+                        {job.dates} · {job.location}
+                      </div>
+                      <p className="mt-2 text-muted-foreground">
+                        {job.description}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             );
           })}
-        </div>
+        </Reveal>
       </div>
     </section>
   );
