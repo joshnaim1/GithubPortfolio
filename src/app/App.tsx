@@ -4,6 +4,7 @@ import { ProjectGrid } from "./components/ProjectGrid";
 import { About } from "./components/About";
 import { InteractiveFeature } from "./components/InteractiveFeature";
 import { Swimming } from "./components/Swimming";
+import { Piano } from "./components/Piano";
 import { Footer } from "./components/Footer";
 
 export default function App() {
@@ -16,6 +17,7 @@ export default function App() {
         <About />
         <InteractiveFeature />
         <Swimming />
+        <Piano />
       </main>
       <Footer />
     </div>
