@@ -36,10 +36,8 @@ const shots: Shot[] = [
   },
   {
     src: beans,
-    alt: "A seared protein over black beans with tomato, corn, cotija, and green sauce",
-    // TODO: Josh labeled this "chicken quesadilla with black beans", but there is no
-    // quesadilla in the photo. Confirm the dish before merging.
-    caption: "Chicken quesadilla with black beans",
+    alt: "Seared salmon over black beans with tomato, corn, cotija, and green sauce",
+    caption: "Salmon over black beans",
   },
   {
     src: steak,

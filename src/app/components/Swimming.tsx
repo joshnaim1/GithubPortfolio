@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Play } from "lucide-react";
 import { Reveal } from "./Reveal";
-import joshuaHeadshot from "../assets/swim/joshua-headshot.png";
+import portrait from "../assets/about/joshua-portrait.jpg";
+import poster50 from "../assets/swim/poster-50-free.jpg";
+import poster100 from "../assets/swim/poster-100-free.jpg";
 
 /**
  * The personal closer: swimming.
@@ -9,65 +11,75 @@ import joshuaHeadshot from "../assets/swim/joshua-headshot.png";
  * Sits in the dark band between the playground and the contact footer so the
  * page does not flip themes on the way down.
  *
- * Race clips use a click-to-play facade rather than a live YouTube embed. A
- * real embed loads YouTube's player and its tracking on page load, for every
- * visitor, whether or not they ever press play. Here we show the thumbnail and
- * only mount the iframe once someone actually asks for it.
+ * Race clips are local files served from public/video, behind a poster and a
+ * play button. The <video> element is only mounted once someone presses play,
+ * so the 10-15MB files never download for visitors who do not watch. Nothing
+ * from YouTube loads on this page.
  */
 
 type Clip = {
-  /** YouTube video id, the part after v= or youtu.be/ */
-  id: string;
+  /** Path under public/, e.g. "/video/ccs-nationals-2026-50-free.mp4" */
+  src: string;
+  poster: string;
   title: string;
-  meta: string;
-  /** Optional start time in seconds, for pointing at one race in a long video */
-  start?: number;
+  meet: string;
+  /** The lane Josh is swimming in. This is the one thing a viewer needs to know. */
+  lane: number;
 };
 
-// TODO: fill in from Josh's race video(s). One entry per clip.
-const clips: Clip[] = [];
+const clips: Clip[] = [
+  {
+    src: "/video/ccs-nationals-2026-50-free.mp4",
+    poster: poster50,
+    title: "Men's 50 Freestyle",
+    meet: "College Club Swimming Nationals, 2026",
+    lane: 5,
+  },
+  {
+    src: "/video/ccs-nationals-2026-100-free.mp4",
+    poster: poster100,
+    title: "Men's 100 Freestyle",
+    meet: "College Club Swimming Nationals, 2026",
+    lane: 4,
+  },
+];
 
 type Photo = { src: string; alt: string; w: number; h: number; caption?: string };
 
 const photos: Photo[] = [
-  {
-    src: joshuaHeadshot,
-    alt: "Joshua Naim",
-    w: 300,
-    h: 300,
-  },
+  { src: portrait, alt: "Joshua Naim", w: 665, h: 772 },
   // TODO: team photos go here.
 ];
 
 function ClipCard({ clip }: { clip: Clip }) {
   const [playing, setPlaying] = useState(false);
-  const src = `https://www.youtube-nocookie.com/embed/${clip.id}?autoplay=1&rel=0${
-    clip.start ? `&start=${clip.start}` : ""
-  }`;
 
   return (
     <div className="overflow-hidden rounded-xl border border-white/15 bg-white/5">
-      <div className="relative aspect-video w-full">
+      <div className="relative aspect-video w-full bg-black">
         {playing ? (
-          <iframe
-            src={src}
-            title={clip.title}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
+          <video
+            src={clip.src}
+            poster={clip.poster}
+            controls
+            autoPlay
+            playsInline
+            preload="auto"
+            aria-label={`${clip.title}, ${clip.meet}. Joshua is in lane ${clip.lane}.`}
             className="absolute inset-0 h-full w-full"
           />
         ) : (
           <button
             type="button"
             onClick={() => setPlaying(true)}
-            aria-label={`Play ${clip.title}`}
+            aria-label={`Play ${clip.title}. Joshua is in lane ${clip.lane}.`}
             className="group absolute inset-0 h-full w-full"
           >
             <img
-              src={`https://img.youtube.com/vi/${clip.id}/hqdefault.jpg`}
+              src={clip.poster}
               alt=""
-              width={480}
-              height={360}
+              width={1280}
+              height={720}
               loading="lazy"
               className="h-full w-full object-cover opacity-80 transition-opacity duration-300 group-hover:opacity-100"
             />
@@ -79,13 +91,21 @@ function ClipCard({ clip }: { clip: Clip }) {
           </button>
         )}
       </div>
-      <div className="flex items-baseline justify-between gap-3 border-t border-white/10 px-4 py-3">
-        <span className="text-[color:var(--dark-foreground)]">{clip.title}</span>
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-white/10 px-4 py-3">
+        <div>
+          <div className="text-[color:var(--dark-foreground)]">{clip.title}</div>
+          <div
+            className="mt-0.5 font-['Space_Mono',monospace] text-[color:var(--dark-muted-foreground)]"
+            style={{ fontSize: "12px" }}
+          >
+            {clip.meet}
+          </div>
+        </div>
         <span
-          className="shrink-0 font-['Space_Mono',monospace] text-[color:var(--dark-muted-foreground)]"
-          style={{ fontSize: "12px" }}
+          className="rounded-full bg-[color:var(--accent)] px-2.5 py-1 font-['Space_Mono',monospace] text-[color:var(--accent-foreground)]"
+          style={{ fontSize: "11px" }}
         >
-          {clip.meta}
+          Lane {clip.lane}
         </span>
       </div>
     </div>
@@ -93,7 +113,6 @@ function ClipCard({ clip }: { clip: Clip }) {
 }
 
 export function Swimming() {
-  const hasClips = clips.length > 0;
   const hasTeam = photos.length > 1;
 
   return (
@@ -158,25 +177,13 @@ export function Swimming() {
         </Reveal>
 
         {/* Races */}
-        {hasClips ? (
-          <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
-            {clips.map((c, i) => (
-              <Reveal key={c.id} delay={(i % 2) * 0.08}>
-                <ClipCard clip={c} />
-              </Reveal>
-            ))}
-          </div>
-        ) : (
-          <Reveal delay={0.12}>
-            <p
-              className="mt-12 rounded-xl border border-dashed border-white/20 px-5 py-8 text-center font-['Space_Mono',monospace] text-[color:var(--dark-muted-foreground)]"
-              style={{ fontSize: "13px" }}
-            >
-              {/* TODO: add race clips to `clips` above and this placeholder goes away. */}
-              Race clips coming soon
-            </p>
-          </Reveal>
-        )}
+        <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
+          {clips.map((c, i) => (
+            <Reveal key={c.src} delay={(i % 2) * 0.08}>
+              <ClipCard clip={c} />
+            </Reveal>
+          ))}
+        </div>
       </div>
     </section>
   );
