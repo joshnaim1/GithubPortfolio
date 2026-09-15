@@ -2,6 +2,7 @@ import { TopNav } from "./components/TopNav";
 import { Hero } from "./components/Hero";
 import { ProjectGrid } from "./components/ProjectGrid";
 import { About } from "./components/About";
+import { OffTheClock } from "./components/OffTheClock";
 import { InteractiveFeature } from "./components/InteractiveFeature";
 import { Swimming } from "./components/Swimming";
 import { Piano } from "./components/Piano";
@@ -15,6 +16,7 @@ export default function App() {
         <Hero />
         <ProjectGrid />
         <About />
+        <OffTheClock />
         <InteractiveFeature />
         <Swimming />
         <Piano />

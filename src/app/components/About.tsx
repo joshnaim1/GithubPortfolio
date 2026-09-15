@@ -1,5 +1,6 @@
 import { ArrowUpRight } from "lucide-react";
 import { Reveal } from "./Reveal";
+import portrait from "../assets/about/joshua-portrait.jpg";
 
 const skills = [
   "Python",
@@ -71,6 +72,14 @@ export function About() {
     <section id="about" className="mx-auto max-w-6xl px-6 py-24">
       <div className="grid grid-cols-1 gap-12 md:grid-cols-[1.2fr_1fr]">
         <Reveal>
+          <img
+            src={portrait}
+            alt="Joshua Naim"
+            width={665}
+            height={772}
+            loading="lazy"
+            className="mb-8 size-32 rounded-2xl border border-border object-cover"
+          />
           <p className="font-['Space_Mono',monospace] uppercase tracking-[0.2em] text-muted-foreground" style={{ fontSize: "12px" }}>
             About
           </p>

@@ -4,6 +4,7 @@ import { Menu, X } from "lucide-react";
 const links = [
   { href: "#work", label: "Work" },
   { href: "#about", label: "About" },
+  { href: "#food", label: "Food" },
   { href: "#playground", label: "Playground" },
   { href: "#swimming", label: "Swimming" },
   { href: "#piano", label: "Piano" },
@@ -27,10 +28,11 @@ export function TopNav() {
     document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Close the mobile sheet if the viewport grows past the md breakpoint.
+  // Close the mobile sheet if the viewport grows past the lg breakpoint.
+  // Seven links do not fit on one row at md, so tablets get the sheet too.
   useEffect(() => {
     if (!open) return;
-    const mq = window.matchMedia("(min-width: 768px)");
+    const mq = window.matchMedia("(min-width: 1024px)");
     const onChange = () => mq.matches && setOpen(false);
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
@@ -53,7 +55,7 @@ export function TopNav() {
         >
           ◍ Joshua Naim
         </a>
-        <ul className="hidden items-center gap-8 md:flex">
+        <ul className="hidden items-center gap-8 lg:flex">
           {links.map((link) => (
             <li key={link.href}>
               <a
@@ -82,7 +84,7 @@ export function TopNav() {
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
             aria-controls="mobile-nav"
-            className="rounded-full border border-border p-2 text-foreground transition-colors hover:border-foreground md:hidden"
+            className="rounded-full border border-border p-2 text-foreground transition-colors hover:border-foreground lg:hidden"
           >
             {open ? <X className="size-4" /> : <Menu className="size-4" />}
           </button>
@@ -92,7 +94,7 @@ export function TopNav() {
       {open && (
         <div
           id="mobile-nav"
-          className="border-t border-border bg-background/95 backdrop-blur-md md:hidden"
+          className="border-t border-border bg-background/95 backdrop-blur-md lg:hidden"
         >
           <ul className="mx-auto flex max-w-6xl flex-col px-6 py-2">
             {links.map((link) => (
