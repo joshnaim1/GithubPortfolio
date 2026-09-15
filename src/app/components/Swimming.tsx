@@ -4,6 +4,7 @@ import { Reveal } from "./Reveal";
 import portrait from "../assets/about/joshua-portrait.jpg";
 import poster50 from "../assets/swim/poster-50-free.jpg";
 import poster100 from "../assets/swim/poster-100-free.jpg";
+import teamNationals from "../assets/swim/team-nationals-2026.jpg";
 
 /**
  * The personal closer: swimming.
@@ -47,8 +48,22 @@ const clips: Clip[] = [
 type Photo = { src: string; alt: string; w: number; h: number; caption?: string };
 
 const photos: Photo[] = [
-  { src: portrait, alt: "Joshua Naim", w: 665, h: 772 },
-  // TODO: team photos go here.
+  { src: portrait, alt: "Joshua Naim", w: 665, h: 772, caption: "Cal Poly Swim Club" },
+];
+
+/**
+ * Team photos. Rendered at natural aspect and never cropped, so nobody gets
+ * cut out of a group shot. The first entry spans two columns.
+ */
+const team: Photo[] = [
+  {
+    src: teamNationals,
+    alt: "Joshua and three teammates in Cal Poly Club Sports Nationals Swim Team hoodies beside an outdoor pool at night",
+    w: 1600,
+    h: 1200,
+    caption: "Nationals team, 2026",
+  },
+  // TODO: the two trophy photos from the nationals carousel go here once the files land.
 ];
 
 function ClipCard({ clip }: { clip: Clip }) {
@@ -113,8 +128,6 @@ function ClipCard({ clip }: { clip: Clip }) {
 }
 
 export function Swimming() {
-  const hasTeam = photos.length > 1;
-
   return (
     <section
       id="swimming"
@@ -138,13 +151,14 @@ export function Swimming() {
               </h2>
             </div>
             <p className="max-w-sm text-[color:var(--dark-muted-foreground)]">
-              National team swimmer with the Cal Poly Swim Club. Most of what I know about
-              showing up on a bad day, I learned in a pool at 6am.
+              National team swimmer with the Cal Poly Swim Club, the 2026 College Club
+              Swimming national champions. Most of what I know about showing up on a bad
+              day, I learned in a pool at 6am.
             </p>
           </div>
         </Reveal>
 
-        {/* People */}
+        {/* Me */}
         <Reveal delay={0.08}>
           <div className="mt-12 flex flex-wrap items-center gap-5">
             {photos.map((p) => (
@@ -158,22 +172,44 @@ export function Swimming() {
                   className="size-20 rounded-full border border-white/15 object-cover"
                 />
                 {p.caption && (
-                  <figcaption className="text-[color:var(--dark-muted-foreground)]">
+                  <figcaption
+                    className="font-['Space_Mono',monospace] text-[color:var(--dark-muted-foreground)]"
+                    style={{ fontSize: "12px" }}
+                  >
                     {p.caption}
                   </figcaption>
                 )}
               </figure>
             ))}
-            {!hasTeam && (
-              <p
-                className="font-['Space_Mono',monospace] text-[color:var(--dark-muted-foreground)]"
-                style={{ fontSize: "12px" }}
-              >
-                {/* TODO: add team photos to `photos` above and this line goes away. */}
-                Team photos coming soon
-              </p>
-            )}
           </div>
+        </Reveal>
+
+        {/* The team */}
+        <Reveal delay={0.12}>
+          <ul className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
+            {team.map((p, i) => (
+              <li key={p.src} className={i === 0 ? "md:col-span-2" : ""}>
+                <figure>
+                  <img
+                    src={p.src}
+                    alt={p.alt}
+                    width={p.w}
+                    height={p.h}
+                    loading="lazy"
+                    className="w-full rounded-xl border border-white/15"
+                  />
+                  {p.caption && (
+                    <figcaption
+                      className="mt-2.5 font-['Space_Mono',monospace] text-[color:var(--dark-muted-foreground)]"
+                      style={{ fontSize: "12px" }}
+                    >
+                      {p.caption}
+                    </figcaption>
+                  )}
+                </figure>
+              </li>
+            ))}
+          </ul>
         </Reveal>
 
         {/* Races */}
